@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Chatbot Teste</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='chatbot.css') }}">
+</head>
+<body>
+  <div id="chatbot-container">
+    <div id="chatbot-messages"></div>
+    <div id="chatbot-input">
+      <input type="text" id="chatbot-user-input" placeholder="Digite sua pergunta...">
+      <button onclick="enviarPergunta()">Enviar</button>
+    </div>
+  </div>
+
+  <script>
+    async function enviarPergunta() {
+      const input = document.getElementById("chatbot-user-input");
+      const mensagem = input.value;
+      if (!mensagem) return;
+
+      const chat = document.getElementById("chatbot-messages");
+      chat.innerHTML += `<p><strong>Você:</strong> ${mensagem}</p>`;
+      input.value = "";
+
+      const resposta = await fetch("/pergunta", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pergunta: mensagem })
+      }).then(r => r.json());
+
+      chat.innerHTML += `<p><strong>Fabio Jr:</strong> ${resposta.resposta}</p>`;
+      chat.scrollTop = chat.scrollHeight;
+    }
+  </script>
+</body>
+</html>
